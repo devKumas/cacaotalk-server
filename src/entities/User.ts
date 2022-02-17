@@ -15,9 +15,6 @@ export class User extends AutoDeleteDateEntity {
   @Column('varchar', { name: 'name', length: 10 })
   name?: string;
 
-  @Column('varchar', { name: 'nick_name', length: 10 })
-  nickName?: string;
-
   @Column('enum', { name: 'gender', enum: ['M', 'F'] })
   gender?: gender;
 

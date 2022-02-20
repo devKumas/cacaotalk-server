@@ -1,21 +1,34 @@
-export * as swaggerUi from 'swagger-ui-express';
-import swaggereJsdoc from 'swagger-jsdoc';
-import dotenv from 'dotenv';
+import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { getMetadataArgsStorage } from 'routing-controllers';
+import { routingControllersToSpec } from 'routing-controllers-openapi';
+import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import { routingControllerOptions } from './RoutingConfig';
+import { env } from '../env';
 
-dotenv.config();
+export function useSwagger(app: express.Application) {
+  const schemas = validationMetadatasToSchemas({
+    refPointerPrefix: '#/components/schemas',
+  });
 
-const options = {
-  swaggerDefinition: {
-    swagger: '2.0',
-    info: {
-      title: 'Clean Chat API',
-      version: '1.0.0',
-      description: '',
+  const storage = getMetadataArgsStorage();
+  const spec = routingControllersToSpec(storage, routingControllerOptions, {
+    components: {
+      schemas,
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
     },
-    host: process.env.API_HOST,
-    schemes: process.env.NODE_ENV === 'production' ? ['https', 'http'] : ['http'],
-  },
-  apis: ['./src/models/*.ts', './src/routes/*.ts'],
-};
+    info: {
+      title: 'CacaoTalk',
+      description: 'CacaoTalk API',
+      version: '1.0.0',
+    },
+  });
 
-export const specs = swaggereJsdoc(options);
+  app.use(env.swagger.route, swaggerUi.serve, swaggerUi.setup(spec));
+}

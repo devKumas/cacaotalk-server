@@ -12,5 +12,5 @@ export class ChatList extends AutoDateEntity {
   ChatContents?: ChatContent[];
 
   @OneToMany(() => ChatUser, (chatUsers) => chatUsers.ChatList)
-  ChatUsers?: ChatContent[];
+  ChatUsers?: ChatUser[];
 }

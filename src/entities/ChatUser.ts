@@ -5,14 +5,14 @@ import { User } from './User';
 
 @Entity({ name: 'chat_users' })
 export class ChatUser extends AutoDateEntity {
-  @Column('varchar', { name: 'titie', length: 100 })
+  @Column('varchar', { name: 'titie', length: 100, nullable: true })
   title?: string | null;
 
-  @ManyToOne(() => ChatList, (chatContents) => chatContents.ChatContents)
+  @ManyToOne(() => ChatList, (chatList) => chatList.ChatUsers)
   @JoinColumn({ name: 'chat_list_id' })
   ChatList?: ChatList;
 
-  @ManyToOne(() => User, (chatContents) => chatContents.ChatUsers)
+  @ManyToOne(() => User, (user) => user.ChatUsers)
   @JoinColumn({ name: 'user_id' })
   User?: User;
 }

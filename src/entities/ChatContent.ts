@@ -13,7 +13,7 @@ export class ChatContent extends AutoDateEntity {
   @Column('boolean', { name: 'deleted', default: false })
   deleted?: boolean | null;
 
-  @ManyToOne(() => ChatList, (chatContents) => chatContents.ChatContents)
+  @ManyToOne(() => ChatList, (chatList) => chatList.ChatContents)
   @JoinColumn({ name: 'chat_list_id' })
   ChatList?: ChatList;
 }

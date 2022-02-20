@@ -6,15 +6,15 @@ import {
 } from 'typeorm';
 
 export abstract class DateEntity {
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', select: false })
   createdAt!: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', select: false })
   updatedAt!: Date;
 }
 
 export abstract class DeleteDateEntity extends DateEntity {
-  @DeleteDateColumn({ name: 'deleted_at' })
+  @DeleteDateColumn({ name: 'deleted_at', select: false })
   deleteAt!: Date | null;
 }
 

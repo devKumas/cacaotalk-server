@@ -52,9 +52,9 @@ export class AuthController {
   }
 
   @OpenAPI({
-    summary: 'Access Token 재발급',
+    summary: '토큰 재발급',
     description:
-      '사용자의 Refresh Token을 체크하여 Access Token을 재발급 합니다. Refresh Token의 남은기간이 1일 이하라면 함께 재발급 됩니다.',
+      '사용자의 Refresh Token을 체크하여 Access Token을 재발급 합니다. Refresh Token의 기간이 하루 미만 이면 함께 재발급 됩니다.',
     statusCode: '200',
     responses: {
       '400': {

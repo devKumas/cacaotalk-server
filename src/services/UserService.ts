@@ -71,15 +71,31 @@ export class UserService {
 
   /**
    * 사용자의 정보를 수정한다.
-   * @param user 사용자
+   * @param id userId
    * @param updateUserDto 사용자 수정정보 DTO
    */
-  public async updateUser(user: User, updateUserDto: UpdateUserDto): Promise<User> {
+  public async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) throw new NotFoundError('There is no matching information.');
+
     const { email, password, name } = updateUserDto;
 
     if (email) user.email = email;
     if (password) user.password = bcrypt.hashSync(password, 10);
     if (name) user.name = name;
+
+    return await this.userRepository.save(user);
+  }
+
+  public async updateUserImage(id: number, image?: string | null) {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) throw new NotFoundError('There is no matching information.');
+
+    console.log(image);
+    if (image) user.profileImage = `img/${image}`;
+    else user.profileImage = null;
 
     return await this.userRepository.save(user);
   }

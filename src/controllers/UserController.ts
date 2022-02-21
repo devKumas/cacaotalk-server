@@ -1,3 +1,5 @@
+import multer from 'multer';
+import path from 'path';
 import {
   JsonController,
   Get,
@@ -9,10 +11,14 @@ import {
   Patch,
   Authorized,
   CurrentUser,
+  UploadedFile,
+  UploadedFiles,
+  Delete,
 } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { CreateUserDto, JWTUser, UpdateUserDto } from '../dtos/UserDto';
 import { UserService } from '../services/UserService';
+import { fileUploadOptions } from '../utils/MulterConfig';
 
 @OpenAPI({
   tags: ['User'],
@@ -83,8 +89,37 @@ export class UserController {
 
     if (isDuplicateUser) throw new BadRequestError('This is the email used.');
 
-    const updateUser = await this.userService.getUserById(jwtUser.id);
+    return await this.userService.updateUser(jwtUser.id, updateUserDto);
+  }
 
-    return await this.userService.updateUser(updateUser, updateUserDto);
+  @OpenAPI({
+    summary: '프로필 이미지 변경',
+    description: '사용자의 프로필 이미지를 변경합니다.',
+    statuscode: '200',
+    consumes: {},
+
+    security: [{ bearerAuth: [] }],
+  })
+  @Authorized()
+  @Post('/images')
+  public async updateProfileImage(
+    @CurrentUser() jwtUser: JWTUser,
+    @UploadedFiles('image', { options: fileUploadOptions }) image: any
+  ) {
+    return await this.userService.updateUserImage(jwtUser.id, image[0].filename);
+  }
+
+  @OpenAPI({
+    summary: '프로필 이미지 삭제',
+    description: '사용자의 프로필 이미지를 삭제합니다.',
+    statuscode: '200',
+    consumes: {},
+
+    security: [{ bearerAuth: [] }],
+  })
+  @Authorized()
+  @Delete('/images')
+  public async deleteProfileImage(@CurrentUser() jwtUser: JWTUser) {
+    return await this.userService.updateUserImage(jwtUser.id);
   }
 }

@@ -11,7 +11,7 @@ import {
   CurrentUser,
 } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
-import { JWTUser, UpdateUserDto } from '../dtos/UserDto';
+import { CreateUserDto, JWTUser, UpdateUserDto } from '../dtos/UserDto';
 import { UserService } from '../services/UserService';
 
 @OpenAPI({
@@ -50,9 +50,28 @@ export class UserController {
   public async getUserByEmail(@Param('email') email: string) {
     return await this.userService.getUserByEmail(email);
   }
+  @OpenAPI({
+    summary: '사용자 등록',
+    description: '사용자를 등록하여 반환합니다.',
+    statuscode: '201',
+    responses: {
+      '400': {
+        description: 'Bad request',
+      },
+    },
+  })
+  @HttpCode(201)
+  @Post('')
+  public async register(@Body() createUserDto: CreateUserDto) {
+    const isDuplicateUser = await this.userService.isDuplicateUser(createUserDto.email);
+
+    if (isDuplicateUser) throw new BadRequestError('This is the email used.');
+
+    return await this.userService.createUser(createUserDto);
+  }
 
   @OpenAPI({
-    summary: '사용자정보 수정',
+    summary: '사용자 수정',
     description: '사용자를 정보를 변경하여 반환합니다.',
     statuscode: '200',
     security: [{ bearerAuth: [] }],

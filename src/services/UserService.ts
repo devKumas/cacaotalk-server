@@ -15,7 +15,7 @@ export class UserService {
    * @param id 사용자 id
    */
   public async getUserById(id: number): Promise<User> {
-    const user = await this.userRepository.findUserById(id);
+    const user = await this.userRepository.findById(id);
 
     if (!user) throw new NotFoundError('There is no matching information.');
 
@@ -27,7 +27,7 @@ export class UserService {
    * @param id 사용자 id
    */
   public async getUserPasswordById(id: number): Promise<User> {
-    const user = await this.userRepository.findFullUserById(id);
+    const user = await this.userRepository.findAndPasswordById(id);
 
     if (!user) throw new NotFoundError('There is no matching information.');
 

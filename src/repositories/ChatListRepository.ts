@@ -27,8 +27,9 @@ export class ChatListRepository extends Repository<ChatList> {
 
   public async findById(id: number) {
     return await this.createQueryBuilder('chatList')
+      .leftJoinAndSelect('chatList.ChatContents', 'chatContents')
       .leftJoinAndSelect('chatList.ChatUsers', 'chatUsers')
-      .leftJoinAndSelect('chatUsers.User', 'users')
+      .leftJoinAndSelect('chatUsers.User', 'user')
       .where('chatList.id = :id', { id })
       .getOne();
   }

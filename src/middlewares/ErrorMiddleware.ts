@@ -1,4 +1,4 @@
-import e, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { Middleware, ExpressErrorMiddlewareInterface } from 'routing-controllers';
 import { logger } from '../utils/Winston';
 

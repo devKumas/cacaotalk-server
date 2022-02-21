@@ -26,6 +26,15 @@ export class AuthService {
     return user;
   }
 
+  public async logout(id: number): Promise<User> {
+    const user = await this.userRepository.findById(id);
+
+    if (!user) throw new NotFoundError('There is no matching information.');
+
+    user.refreshToken = null;
+    return await this.userRepository.save(user);
+  }
+
   /**
    * RefreshToken을 사용자에게 저장한다.
    * @param user User

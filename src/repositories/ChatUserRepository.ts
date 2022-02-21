@@ -3,6 +3,12 @@ import { ChatUser } from '../entities/chatUser';
 
 @EntityRepository(ChatUser)
 export class ChatUserRepository extends Repository<ChatUser> {
+  /**
+   * 유저의 채팅정보를 호출한다.
+   * @param id userId
+   * @param chatId chatId
+   * @returns
+   */
   public async findByUserIdAndChatId(id: number, chatId: number) {
     return await this.createQueryBuilder('chatUser')
       .where('user_id = :id', { id })

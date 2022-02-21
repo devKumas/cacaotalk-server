@@ -1,19 +1,21 @@
-import { NotFoundError } from 'routing-controllers';
+import { ForbiddenError, NotFoundError } from 'routing-controllers';
 import { Service } from 'typedi';
 import { getConnection } from 'typeorm';
-import { each, filter, head, map, pipe } from '@fxts/core';
+import { filter, head, map, pipe } from '@fxts/core';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { CreateChatDto, UpdateChatDto } from '../dtos/ChatDto';
+import { CreateChatDto, CreateMessageDto, UpdateChatDto } from '../dtos/ChatDto';
 import { ChatList } from '../entities/chatList';
 import { ChatListRepository } from '../repositories/ChatListRepository';
 import { ChatUserRepository } from '../repositories/ChatUserRepository';
 import { UserRepository } from '../repositories/UserRepository';
+import { ChatContentRepository } from '../repositories/ChatContentRepository';
 
 @Service()
 export class ChatService {
   constructor(
     @InjectRepository() private chatListRepository: ChatListRepository,
     @InjectRepository() private chatUserRepository: ChatUserRepository,
+    @InjectRepository() private chatContentRepository: ChatContentRepository,
     @InjectRepository() private userRepository: UserRepository
   ) {}
 
@@ -32,7 +34,7 @@ export class ChatService {
    * @returns
    */
   public async createChat(id: number, createChatDto: CreateChatDto) {
-    const targetUser = await this.userRepository.findUserById(createChatDto.targetId);
+    const targetUser = await this.userRepository.findById(createChatDto.targetId);
 
     if (!targetUser) throw new NotFoundError('There is no matching information.');
 
@@ -76,5 +78,50 @@ export class ChatService {
     if (!chatUser) throw new NotFoundError('There is no matching information.');
 
     await this.chatUserRepository.delete(chatUser);
+  }
+
+  public async getChatMessages(id: number, chatId: number) {
+    const chatUser = await this.chatUserRepository.findByUserIdAndChatId(id, chatId);
+
+    if (!chatUser) throw new NotFoundError('There is no matching information.');
+
+    return await this.chatContentRepository.findByChatListId(chatId);
+  }
+
+  public async createChatMessage(id: number, chatId: number, createMessageDto: CreateMessageDto) {
+    const chatList = await this.chatListRepository.findById(chatId);
+
+    if (!chatList) throw new NotFoundError('There is no matching information.');
+
+    if (!chatList.ChatUsers || !chatList.ChatUsers.filter((v) => v.User?.id === id).length)
+      throw new ForbiddenError('The request is invalid.');
+
+    const message = createMessageDto.toEntity(id);
+
+    chatList.ChatContents = [...(chatList.ChatContents || []), message];
+
+    return await getConnection().transaction(async (transactionalEntityManager) => {
+      const result = await this.chatContentRepository.transactionSave(
+        transactionalEntityManager,
+        message
+      );
+      await this.chatListRepository.transactionSave(transactionalEntityManager, chatList);
+      return result;
+    });
+  }
+
+  public async deleteChatMessage(id: number, chatId: number, messageId: number) {
+    const message = await this.chatContentRepository.findById(messageId, chatId);
+
+    if (!message) throw new NotFoundError('There is no matching information.');
+
+    if (message?.User?.id !== id || message.deleted)
+      throw new ForbiddenError('The request is invalid.');
+
+    message.content = null;
+    message.image = null;
+    message.deleted = true;
+
+    this.chatContentRepository.save(message);
   }
 }

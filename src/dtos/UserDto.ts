@@ -16,7 +16,7 @@ export class CreateUserDto {
   @Length(1, 10)
   public name!: string;
 
-  @IsEnum(Gender, { each: true })
+  @IsEnum(Gender)
   public gender!: Gender;
 
   public toEntity(): User {
@@ -48,7 +48,7 @@ export class UpdateUserDto {
   @IsOptional()
   public name!: string;
 
-  @IsEnum(Gender, { each: true })
+  @IsEnum(Gender)
   @IsOptional()
   public gender!: Gender;
 }

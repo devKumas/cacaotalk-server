@@ -1,14 +1,6 @@
-import {
-  BadRequestError,
-  Body,
-  CurrentUser,
-  ForbiddenError,
-  HttpCode,
-  JsonController,
-  Post,
-} from 'routing-controllers';
+import { Authorized, Body, CurrentUser, JsonController, Post } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
-import { CreateUserDto, JWTUser, LoginUserDto, ReissuanceAccessTokenDto } from '../dtos/UserDto';
+import { JWTUser, LoginUserDto, ReissuanceAccessTokenDto } from '../dtos/UserDto';
 import { AuthService } from '../services/AuthService';
 import { UserService } from '../services/UserService';
 import { createAccessToken, createRefreshToken, checkRefreshToken } from '../utils/Auth';
@@ -31,7 +23,7 @@ export class AuthController {
     },
   })
   @Post('/login')
-  public async logout(@Body() loginUserDto: LoginUserDto) {
+  public async login(@Body() loginUserDto: LoginUserDto) {
     const user = await this.authService.login(loginUserDto);
 
     const accessToken = createAccessToken(user);
@@ -43,23 +35,8 @@ export class AuthController {
   }
 
   @OpenAPI({
-    summary: '사용자 등록',
-    description: '사용자를 등록하여 반환합니다.',
-    statuscode: '201',
-  })
-  @HttpCode(201)
-  @Post('/register')
-  public async register(@Body() createUserDto: CreateUserDto) {
-    const isDuplicateUser = await this.userService.isDuplicateUser(createUserDto.email);
-
-    if (isDuplicateUser) throw new BadRequestError('This is the email used.');
-
-    return await this.userService.createUser(createUserDto);
-  }
-
-  @OpenAPI({
-    summary: 'Access Token 재발급',
-    description: '사용자의 Refresh Token을 체크하여 Access Token을 재발급 합니다.',
+    summary: '로그아웃',
+    description: '저장된 Refresh Token을 삭제합니다.',
     statusCode: '200',
     responses: {
       '400': {
@@ -67,6 +44,23 @@ export class AuthController {
       },
     },
     security: [{ bearerAuth: [] }],
+  })
+  @Authorized()
+  @Post('/logout')
+  public async logout(@CurrentUser() jwtUser: JWTUser) {
+    await this.authService.logout(jwtUser.id);
+  }
+
+  @OpenAPI({
+    summary: '토큰 재발급',
+    description:
+      '사용자의 Refresh Token을 체크하여 Access Token을 재발급 합니다. Refresh Token의 기간이 하루 미만 이면 함께 재발급 됩니다.',
+    statusCode: '200',
+    responses: {
+      '400': {
+        description: 'Bad request',
+      },
+    },
   })
   @Post('/token')
   public async reissuanceAccessToken(@Body() reissuanceAccessToken: ReissuanceAccessTokenDto) {

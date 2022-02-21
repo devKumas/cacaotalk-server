@@ -1,16 +1,8 @@
-import {
-  AfterLoad,
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-} from 'typeorm';
+import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { ChatUser } from './chatUser';
 import { AutoDeleteDateEntity } from './Entity';
 import bcrypt from 'bcrypt';
+import { ChatContent } from './chatContent';
 
 export enum Gender {
   M = 'M',
@@ -51,8 +43,11 @@ export class User extends AutoDeleteDateEntity {
   })
   Friends?: User[];
 
-  @OneToMany(() => ChatUser, (chatusers) => chatusers.User)
-  ChatUsers?: ChatUser;
+  @OneToMany(() => ChatUser, (chatUsers) => chatUsers.User)
+  ChatUsers?: ChatUser[];
+
+  @OneToMany(() => ChatContent, (chatContents) => chatContents.User)
+  ChatContents?: ChatContent[];
 
   @BeforeInsert()
   async hashPassword() {

@@ -13,6 +13,7 @@ import { routingControllerOptions } from '../utils/RoutingConfig';
 import { logger, stream } from '../utils/winston';
 import { useSwagger } from '../utils/Swagger';
 import { env } from '../env';
+import socket from '../utils/socket';
 
 export class App {
   public app: express.Application;
@@ -21,6 +22,7 @@ export class App {
     this.app = express();
     this.setDatabase();
     this.setMiddlewares();
+    this.setImageUpload();
   }
 
   private async setDatabase(): Promise<void> {
@@ -34,7 +36,17 @@ export class App {
   private setMiddlewares(): void {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use('/img', express.static(path.join(__dirname, '..', 'uploads')));
     this.app.use(morgan('combined', { stream }));
+  }
+
+  private setImageUpload(): void {
+    try {
+      fs.readdirSync('uploads');
+    } catch (error) {
+      logger.error('uploads 폴더를 생성합니다');
+      fs.mkdirSync('uploads');
+    }
   }
 
   public async createExpressServer(port: number): Promise<void> {
@@ -46,6 +58,8 @@ export class App {
       const createHttpServer = http.createServer(this.app).listen(port, () => {
         logger.info(`http Server is started on port ${port}`);
       });
+
+      socket(createHttpServer, this.app);
 
       if (env.isProduction) {
         const option = {
@@ -67,6 +81,8 @@ export class App {
         const createHttpsServer = https.createServer(option, this.app).listen(port + 1, () => {
           logger.info(`https Server is started on port ${port + 1}`);
         });
+
+        socket(createHttpsServer, this.app);
       }
     } catch (error) {
       console.log(error);

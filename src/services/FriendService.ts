@@ -21,7 +21,7 @@ export class FriendService {
   }
 
   public async createFriend(id: number, targetId: number) {
-    const targetUser = await this.userRepository.findUserById(targetId);
+    const targetUser = await this.userRepository.findById(targetId);
 
     // 입력된 유저의 정보가 존재하는지 체크
     if (!targetUser) throw new NotFoundError('There is no matching information.');
@@ -43,7 +43,7 @@ export class FriendService {
   }
 
   public async deleteFriend(id: number, targetId: number) {
-    const targetUser = await this.userRepository.findUserById(targetId);
+    const targetUser = await this.userRepository.findById(targetId);
 
     // 입력된 유저의 정보가 존재하는지 체크
     if (!targetUser) throw new NotFoundError('There is no matching information.');

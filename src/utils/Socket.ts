@@ -1,9 +1,9 @@
+import express from 'express';
 import { Server } from 'socket.io';
-import { Express } from 'express';
 import { Server as HttpServer } from 'http';
-import User from '../models/user';
+import { User } from '../entities/user';
 
-export default (httpServer: HttpServer, app: Express) => {
+export default (httpServer: HttpServer, app: express.Application) => {
   const io = new Server(httpServer, {
     cors: {
       origin: true,

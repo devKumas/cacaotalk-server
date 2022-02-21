@@ -8,7 +8,7 @@ export class UserRepository extends Repository<User> {
    * @param id userId
    * @returns
    */
-  public async findUserById(id: number) {
+  public async findById(id: number) {
     return await this.createQueryBuilder('user').where('user.id = :id', { id }).getOne();
   }
 
@@ -17,7 +17,7 @@ export class UserRepository extends Repository<User> {
    * @param id userId
    * @returns
    */
-  public async findFullUserById(id: number) {
+  public async findAndPasswordById(id: number) {
     return await this.createQueryBuilder('user')
       .addSelect('user.password')
       .where('user.id = :id', { id })

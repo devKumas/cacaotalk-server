@@ -5,8 +5,8 @@ import { authorizationChecker, currentUserChecker } from './Auth';
  * routing-controllers 설정
  */
 export const routingControllerOptions = {
-  defaultErrorHandler: false,
   cors: true,
+  defaultErrorHandler: false,
   routePrefix: env.app.apiPrefix,
   controllers: [`${__dirname}/../controllers/*{.ts,.js}`],
   middlewares: [`${__dirname}/../middlewares/*{.ts,.js}`],

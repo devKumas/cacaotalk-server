@@ -1,4 +1,5 @@
 import { IsInt, Length } from 'class-validator';
+import { ChatContent } from '../entities/chatContent';
 import { ChatList } from '../entities/chatList';
 import { ChatUser } from '../entities/chatUser';
 import { User } from '../entities/User';
@@ -33,4 +34,18 @@ export class CreateChatDto {
 export class UpdateChatDto {
   @Length(1, 100)
   public title!: string;
+}
+
+export class CreateMessageDto {
+  @Length(1, 100)
+  public content!: string;
+
+  public toEntity(id: number) {
+    const user = new User();
+    user.id = id;
+    const message = new ChatContent();
+    message.content = this.content;
+    message.User = user;
+    return message;
+  }
 }

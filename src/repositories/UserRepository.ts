@@ -1,4 +1,5 @@
 import { EntityRepository, Repository } from 'typeorm';
+import { CreateUserDto } from '../dtos/UserDto';
 import { User } from '../entities/User';
 
 @EntityRepository(User)
@@ -8,7 +9,7 @@ export class UserRepository extends Repository<User> {
    * @param id userId
    * @returns
    */
-  public async findById(id: number) {
+  async findById(id: number) {
     return await this.createQueryBuilder('user').where('user.id = :id', { id }).getOne();
   }
 
@@ -17,7 +18,7 @@ export class UserRepository extends Repository<User> {
    * @param id userId
    * @returns
    */
-  public async findAndPasswordById(id: number) {
+  async findAndPasswordById(id: number) {
     return await this.createQueryBuilder('user')
       .addSelect('user.password')
       .where('user.id = :id', { id })
@@ -29,7 +30,7 @@ export class UserRepository extends Repository<User> {
    * @param email userEmail
    * @returns
    */
-  public async findUserByEmail(email: string) {
+  async findUserByEmail(email: string) {
     return await this.createQueryBuilder('user').where('user.email = :email', { email }).getOne();
   }
 
@@ -38,7 +39,7 @@ export class UserRepository extends Repository<User> {
    * @param email userEmail
    * @returns
    */
-  public async findFullUserByEmail(email: string) {
+  async findFullUserByEmail(email: string) {
     return await this.createQueryBuilder('user')
       .addSelect('user.password')
       .where('user.email = :email', { email })
@@ -50,7 +51,7 @@ export class UserRepository extends Repository<User> {
    * @param id userId
    * @returns
    */
-  public async findUserToken(id: number) {
+  async findUserToken(id: number) {
     return await this.createQueryBuilder('user')
       .addSelect('user.refreshToken')
       .where('user.id = :id', { id })
@@ -62,7 +63,7 @@ export class UserRepository extends Repository<User> {
    * @param id userId
    * @returns
    */
-  public async findFriends(id: number) {
+  async findFriends(id: number) {
     return (
       (
         await this.createQueryBuilder('user')
@@ -78,7 +79,7 @@ export class UserRepository extends Repository<User> {
    * @param id userId
    * @returns
    */
-  public async findFriend(id: number, targetId: number) {
+  async findFriend(id: number, targetId: number) {
     return (
       (
         await this.createQueryBuilder('user')
@@ -89,4 +90,6 @@ export class UserRepository extends Repository<User> {
       )?.Friends ?? []
     );
   }
+
+  async createUser(createuserDto: CreateUserDto) {}
 }

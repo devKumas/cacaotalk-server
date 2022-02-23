@@ -23,7 +23,7 @@ export class AuthController {
     },
   })
   @Post('/login')
-  public async login(@Body() loginUserDto: LoginUserDto) {
+  async login(@Body() loginUserDto: LoginUserDto) {
     const user = await this.authService.login(loginUserDto);
 
     const accessToken = createAccessToken(user);
@@ -47,7 +47,7 @@ export class AuthController {
   })
   @Authorized()
   @Post('/logout')
-  public async logout(@CurrentUser() jwtUser: JWTUser) {
+  async logout(@CurrentUser() jwtUser: JWTUser) {
     await this.authService.logout(jwtUser.id);
   }
 
@@ -63,7 +63,7 @@ export class AuthController {
     },
   })
   @Post('/token')
-  public async reissuanceAccessToken(@Body() reissuanceAccessToken: ReissuanceAccessTokenDto) {
+  async reissuanceAccessToken(@Body() reissuanceAccessToken: ReissuanceAccessTokenDto) {
     const refreshToken = checkRefreshToken(reissuanceAccessToken.refreshToken);
 
     let newRefhreshToken;

@@ -9,9 +9,9 @@ import { User } from '../entities/User';
  */
 export class CreateChatDto {
   @IsInt()
-  public targetId!: number;
+  targetId!: number;
 
-  public toEntity(id: number) {
+  toEntity(id: number) {
     const user = new User();
     user.id = id;
 
@@ -33,14 +33,14 @@ export class CreateChatDto {
 
 export class UpdateChatDto {
   @Length(1, 100)
-  public title!: string;
+  title!: string;
 }
 
 export class CreateMessageDto {
   @Length(1, 100)
-  public content!: string;
+  content!: string;
 
-  public toEntity(id: number) {
+  toEntity(id: number) {
     const user = new User();
     user.id = id;
     const message = new ChatContent();

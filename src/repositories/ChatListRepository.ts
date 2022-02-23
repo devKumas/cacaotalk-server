@@ -7,7 +7,7 @@ export class ChatListRepository extends Repository<ChatList> {
    * 사용자의 채팅목록을 조회한다.
    * @param id userId
    */
-  public async findByUserId(id: number) {
+  async findByUserId(id: number) {
     return await this.createQueryBuilder('chatList')
       .leftJoinAndSelect('chatList.ChatUsers', 'chatUsers')
       .leftJoinAndSelect('chatUsers.User', 'user')
@@ -25,7 +25,7 @@ export class ChatListRepository extends Repository<ChatList> {
       .getMany();
   }
 
-  public async findById(id: number) {
+  async findById(id: number) {
     return await this.createQueryBuilder('chatList')
       .leftJoinAndSelect('chatList.ChatContents', 'chatContents')
       .leftJoinAndSelect('chatList.ChatUsers', 'chatUsers')
@@ -39,7 +39,7 @@ export class ChatListRepository extends Repository<ChatList> {
    * @param transactionManager 트랜잭션
    * @param chatList chatList Entity
    */
-  public async transactionSave(
+  async transactionSave(
     @TransactionManager() transactionManager: EntityManager,
     chatList: ChatList
   ) {

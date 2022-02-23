@@ -35,7 +35,7 @@ export class ChatController {
     },
   })
   @Get('')
-  public async getChats(@CurrentUser() jwtUser: JWTUser) {
+  async getChats(@CurrentUser() jwtUser: JWTUser) {
     return (await this.chatService.getChatLists(jwtUser.id)).map((v) => {
       const { id } = v;
       const { title } = v.ChatUsers?.filter((v) => v.User?.id === jwtUser.id)[0]!;
@@ -58,7 +58,7 @@ export class ChatController {
     },
   })
   @Post('')
-  public async addChat(@CurrentUser() jwtUser: JWTUser, @Body() createChatDto: CreateChatDto) {
+  async addChat(@CurrentUser() jwtUser: JWTUser, @Body() createChatDto: CreateChatDto) {
     // 자신의 아이디를 등록하는 경우
     if (jwtUser.id === createChatDto.targetId) throw new ForbiddenError('The request is invalid.');
 
@@ -83,7 +83,7 @@ export class ChatController {
     },
   })
   @Put('/:chatId')
-  public async editChat(
+  async editChat(
     @CurrentUser() jwtUser: JWTUser,
     @Body() updateChatDto: UpdateChatDto,
     @Param('chatId') chatId: number
@@ -102,7 +102,7 @@ export class ChatController {
     },
   })
   @Delete('/:chatId')
-  public async removeChat(@CurrentUser() jwtUser: JWTUser, @Param('chatId') chatId: number) {
+  async removeChat(@CurrentUser() jwtUser: JWTUser, @Param('chatId') chatId: number) {
     return await this.chatService.deleteChat(jwtUser.id, chatId);
   }
 
@@ -117,7 +117,7 @@ export class ChatController {
     },
   })
   @Get('/:chatId/messages')
-  public async getMessages(@CurrentUser() jwtUser: JWTUser, @Param('chatId') chatId: number) {
+  async getMessages(@CurrentUser() jwtUser: JWTUser, @Param('chatId') chatId: number) {
     return await this.chatService.getChatMessages(jwtUser.id, chatId);
   }
 
@@ -132,7 +132,7 @@ export class ChatController {
     },
   })
   @Post('/:chatId/messages')
-  public async addMessage(
+  async addMessage(
     @CurrentUser() jwtUser: JWTUser,
     @Param('chatId') chatId: number,
     @Body() createMessageDto: CreateMessageDto
@@ -151,7 +151,7 @@ export class ChatController {
     },
   })
   @Delete('/:chatId/messages/:messageId')
-  public async removeMessage(
+  async removeMessage(
     @CurrentUser() jwtUser: JWTUser,
     @Param('chatId') chatId: number,
     @Param('messageId') messageId: number

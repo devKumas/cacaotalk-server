@@ -3,7 +3,7 @@ import { ChatContent } from '../entities/chatContent';
 
 @EntityRepository(ChatContent)
 export class ChatContentRepository extends Repository<ChatContent> {
-  public async findByChatListId(chatId: number) {
+  async findByChatListId(chatId: number) {
     return await this.createQueryBuilder('chatContents')
       .addSelect(['user.id', 'user.name'])
       .leftJoin('chatContents.User', 'user')
@@ -11,7 +11,7 @@ export class ChatContentRepository extends Repository<ChatContent> {
       .getMany();
   }
 
-  public async findById(id: number, chatId: number) {
+  async findById(id: number, chatId: number) {
     return await this.createQueryBuilder('chatContents')
       .addSelect(['user.id'])
       .leftJoin('chatContents.ChatList', 'chatList')
@@ -26,7 +26,7 @@ export class ChatContentRepository extends Repository<ChatContent> {
    * @param transactionManager 트랜잭션
    * @param chatUser chatContent Entity
    */
-  public async transactionSave(
+  async transactionSave(
     @TransactionManager() transactionManager: EntityManager,
     chatContent: ChatContent
   ) {

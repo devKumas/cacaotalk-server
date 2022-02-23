@@ -13,7 +13,7 @@ export class AuthService {
    * 로그인 정보를 확인하여 일치하는 정보를 반환한다.
    * @param loginUserDto 로그인 정보 DTO
    */
-  public async login(loginUserDto: LoginUserDto): Promise<User> {
+  async login(loginUserDto: LoginUserDto): Promise<User> {
     const { email, password } = loginUserDto;
     const user = await this.userRepository.findFullUserByEmail(email);
 
@@ -26,7 +26,7 @@ export class AuthService {
     return user;
   }
 
-  public async logout(id: number): Promise<User> {
+  async logout(id: number): Promise<User> {
     const user = await this.userRepository.findById(id);
 
     if (!user) throw new NotFoundError('There is no matching information.');
@@ -40,7 +40,7 @@ export class AuthService {
    * @param user User
    * @param token RefreshToken
    */
-  public async saveRefreshToken(user: User, token: string): Promise<User> {
+  async saveRefreshToken(user: User, token: string): Promise<User> {
     user.refreshToken = token;
     return await this.userRepository.save(user);
   }
@@ -51,7 +51,7 @@ export class AuthService {
    * @param token Refresh Token
    * @returns
    */
-  public async checkUserToken(id: number, token: string): Promise<User> {
+  async checkUserToken(id: number, token: string): Promise<User> {
     const user = await this.userRepository.findUserToken(id);
 
     if (!user || user.refreshToken !== token)

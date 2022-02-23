@@ -33,7 +33,7 @@ export class FriendController {
     },
   })
   @Get('')
-  public async getFriends(@CurrentUser() jwtUser: JWTUser) {
+  async getFriends(@CurrentUser() jwtUser: JWTUser) {
     return await this.friendService.getFriends(jwtUser.id);
   }
 
@@ -48,7 +48,7 @@ export class FriendController {
     },
   })
   @Post('')
-  public async addFriend(@CurrentUser() jwtUser: JWTUser, @Body() friendDto: FriendDto) {
+  async addFriend(@CurrentUser() jwtUser: JWTUser, @Body() friendDto: FriendDto) {
     // 자신의 아이디를 등록하는 경우
     if (jwtUser.id === friendDto.targetId) throw new ForbiddenError('The request is invalid.');
 
@@ -66,7 +66,7 @@ export class FriendController {
     },
   })
   @Delete('/:id')
-  public async removeFriend(@CurrentUser() jwtUser: JWTUser, @Param('id') targetId: number) {
+  async removeFriend(@CurrentUser() jwtUser: JWTUser, @Param('id') targetId: number) {
     // 자신의 아이디를 삭제하는 경우
     if (jwtUser.id === targetId) throw new ForbiddenError('The request is invalid.');
 

@@ -9,10 +9,10 @@ export class FriendService {
   constructor(@InjectRepository() private userRepository: UserRepository) {}
 
   /**
-   * 로그인 정보를 확인하여 일치하는 정보를 반환한다.
+   * 친구를 호출한다.
    * @param loginUserDto 로그인 정보 DTO
    */
-  public async getFriends(id: number): Promise<User[]> {
+  async getFriends(id: number): Promise<User[]> {
     const friends = await this.userRepository.findFriends(id);
 
     if (!friends) throw new NotFoundError('There is no matching information.');
@@ -20,7 +20,13 @@ export class FriendService {
     return friends || [];
   }
 
-  public async createFriend(id: number, targetId: number) {
+  /**
+   * 친구를 등록한다.
+   * @param id userId
+   * @param targetId targetId
+   * @returns
+   */
+  async createFriend(id: number, targetId: number): Promise<User> {
     const targetUser = await this.userRepository.findById(targetId);
 
     // 입력된 유저의 정보가 존재하는지 체크
@@ -42,7 +48,12 @@ export class FriendService {
     return this.userRepository.save(user);
   }
 
-  public async deleteFriend(id: number, targetId: number) {
+  /**
+   * 친구를 삭제한다.
+   * @param id userId
+   * @param targetId targetId
+   */
+  async deleteFriend(id: number, targetId: number): Promise<void> {
     const targetUser = await this.userRepository.findById(targetId);
 
     // 입력된 유저의 정보가 존재하는지 체크

@@ -9,7 +9,7 @@ export class ChatUserRepository extends Repository<ChatUser> {
    * @param chatId chatId
    * @returns
    */
-  public async findByUserIdAndChatId(id: number, chatId: number) {
+  async findByUserIdAndChatId(id: number, chatId: number) {
     return await this.createQueryBuilder('chatUser')
       .where('user_id = :id', { id })
       .andWhere('chat_list_id = :chatId', { chatId })
@@ -21,7 +21,7 @@ export class ChatUserRepository extends Repository<ChatUser> {
    * @param transactionManager 트랜잭션
    * @param chatUser chatUser Entity
    */
-  public async transactionSave(
+  async transactionSave(
     @TransactionManager() transactionManager: EntityManager,
     chatUser: ChatUser
   ) {

@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { ChatContent } from './chatContent';
-import { ChatUser } from './chatUser';
+import { ChatContent } from './ChatContent';
+import { ChatUser } from './ChatUser';
 import { AutoDateEntity } from './Entity';
 
 @Entity({ name: 'chat_lists' })

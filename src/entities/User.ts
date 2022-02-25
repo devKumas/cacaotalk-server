@@ -1,8 +1,8 @@
 import { BeforeInsert, Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
-import { ChatUser } from './chatUser';
+import { ChatUser } from './ChatUser';
 import { AutoDeleteDateEntity } from './Entity';
 import bcrypt from 'bcrypt';
-import { ChatContent } from './chatContent';
+import { ChatContent } from './ChatContent';
 
 export enum Gender {
   M = 'M',

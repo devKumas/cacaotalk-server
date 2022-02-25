@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { ChatList } from './chatList';
+import { ChatList } from './ChatList';
 import { AutoDateEntity } from './Entity';
 import { User } from './User';
 

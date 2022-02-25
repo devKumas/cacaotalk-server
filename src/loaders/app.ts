@@ -85,7 +85,6 @@ export class App {
         socket(createHttpsServer, this.app);
       }
     } catch (error) {
-      console.log(error);
       logger.error(error);
     }
   }

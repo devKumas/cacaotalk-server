@@ -2,9 +2,9 @@ import Container from 'typedi';
 import { createConnection, ConnectionOptions, useContainer } from 'typeorm';
 import { env } from '../env';
 import { User } from '../entities/User';
-import { ChatList } from '../entities/chatList';
-import { ChatContent } from '../entities/chatContent';
-import { ChatUser } from '../entities/chatUser';
+import { ChatList } from '../entities/ChatList';
+import { ChatContent } from '../entities/ChatContent';
+import { ChatUser } from '../entities/ChatUser';
 
 export async function createDatabaseConnection(): Promise<void> {
   try {

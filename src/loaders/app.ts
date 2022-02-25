@@ -5,15 +5,15 @@ import fs from 'fs';
 import path from 'path';
 import http from 'http';
 import https from 'https';
+import { useContainer, useExpressServer } from 'routing-controllers';
+import { Container } from 'typedi';
 
 import { createDatabaseConnection } from './database';
-import { Container } from 'typedi';
-import { useContainer, useExpressServer } from 'routing-controllers';
 import { routingControllerOptions } from '../utils/RoutingConfig';
-import { logger, stream } from '../utils/winston';
+import { logger, stream } from '../utils/Winston';
 import { useSwagger } from '../utils/Swagger';
 import { env } from '../env';
-import socket from '../utils/socket';
+import socket from '../utils/Socket';
 
 export class App {
   public app: express.Application;

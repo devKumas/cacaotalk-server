@@ -1,5 +1,3 @@
-import multer from 'multer';
-import path from 'path';
 import {
   JsonController,
   Get,
@@ -7,18 +5,16 @@ import {
   HttpCode,
   Post,
   Body,
-  BadRequestError,
   Patch,
   Authorized,
   CurrentUser,
   UploadedFile,
-  UploadedFiles,
   Delete,
 } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { CreateUserDto, JWTUser, UpdateUserDto } from '../dtos/UserDto';
 import { UserService } from '../services/UserService';
-import { fileUploadOptions } from '../utils/MulterConfig';
+import { fileUploadOptions } from '../utils/FileUploadConfig';
 
 @OpenAPI({
   tags: ['User'],
@@ -38,7 +34,7 @@ export class UserController {
     },
   })
   @Get('/id/:id')
-  public async getUserById(@Param('id') id: number) {
+  async getUserById(@Param('id') id: number) {
     return await this.userService.getUserById(id);
   }
 
@@ -53,7 +49,7 @@ export class UserController {
     },
   })
   @Get('/email/:email')
-  public async getUserByEmail(@Param('email') email: string) {
+  async getUserByEmail(@Param('email') email: string) {
     return await this.userService.getUserByEmail(email);
   }
   @OpenAPI({
@@ -68,11 +64,7 @@ export class UserController {
   })
   @HttpCode(201)
   @Post('')
-  public async register(@Body() createUserDto: CreateUserDto) {
-    const isDuplicateUser = await this.userService.isDuplicateUser(createUserDto.email);
-
-    if (isDuplicateUser) throw new BadRequestError('This is the email used.');
-
+  async register(@Body() createUserDto: CreateUserDto) {
     return await this.userService.createUser(createUserDto);
   }
 
@@ -84,11 +76,7 @@ export class UserController {
   })
   @Authorized()
   @Patch('')
-  public async editUser(@CurrentUser() jwtUser: JWTUser, @Body() updateUserDto: UpdateUserDto) {
-    const isDuplicateUser = await this.userService.isDuplicateUser(updateUserDto.email);
-
-    if (isDuplicateUser) throw new BadRequestError('This is the email used.');
-
+  async editUser(@CurrentUser() jwtUser: JWTUser, @Body() updateUserDto: UpdateUserDto) {
     return await this.userService.updateUser(jwtUser.id, updateUserDto);
   }
 
@@ -102,11 +90,11 @@ export class UserController {
   })
   @Authorized()
   @Post('/images')
-  public async updateProfileImage(
+  async updateProfileImage(
     @CurrentUser() jwtUser: JWTUser,
-    @UploadedFiles('image', { options: fileUploadOptions }) image: any
+    @UploadedFile('image', { options: fileUploadOptions }) image: any
   ) {
-    return await this.userService.updateUserImage(jwtUser.id, image[0].filename);
+    return await this.userService.updateUserImage(jwtUser.id, image.filename);
   }
 
   @OpenAPI({
@@ -119,7 +107,7 @@ export class UserController {
   })
   @Authorized()
   @Delete('/images')
-  public async deleteProfileImage(@CurrentUser() jwtUser: JWTUser) {
+  async deleteProfileImage(@CurrentUser() jwtUser: JWTUser) {
     return await this.userService.updateUserImage(jwtUser.id);
   }
 }

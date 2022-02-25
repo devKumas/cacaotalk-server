@@ -8,18 +8,18 @@ import { JwtPayload } from 'jsonwebtoken';
 export class CreateUserDto {
   @Length(1, 30)
   @IsEmail()
-  public email!: string;
+  email!: string;
 
   @Length(1, 100)
-  public password!: string;
+  password!: string;
 
   @Length(1, 10)
-  public name!: string;
+  name!: string;
 
-  @IsEnum(Gender)
-  public gender!: Gender;
+  @IsEnum(Gender, { message: 'gender must be a valid enum values(M, F)' })
+  gender!: Gender;
 
-  public toEntity(): User {
+  toEntity(): User {
     const { email, password, name, gender } = this;
 
     const user = new User();
@@ -38,19 +38,19 @@ export class CreateUserDto {
 export class UpdateUserDto {
   @IsEmail()
   @IsOptional()
-  public email!: string;
+  email!: string;
 
   @Length(1, 100)
   @IsOptional()
-  public password!: string;
+  password!: string;
 
   @Length(1, 10)
   @IsOptional()
-  public name!: string;
+  name!: string;
 
   @IsEnum(Gender)
   @IsOptional()
-  public gender!: Gender;
+  gender!: Gender;
 }
 
 /**
@@ -58,10 +58,10 @@ export class UpdateUserDto {
  */
 export class LoginUserDto {
   @IsEmail()
-  public email!: string;
+  email!: string;
 
   @Length(1, 100)
-  public password!: string;
+  password!: string;
 }
 
 /**
@@ -69,21 +69,21 @@ export class LoginUserDto {
  */
 export class ReissuanceAccessTokenDto {
   @Length(0, 500)
-  public refreshToken!: string;
+  refreshToken!: string;
 }
 
 export class FriendDto {
   @IsInt()
-  public targetId!: number;
+  targetId!: number;
 }
 
 /**
  * JWT USER
  */
 export class JWTUser implements JwtPayload {
-  public id!: number;
-  public email?: string;
-  public name?: string;
-  public iat!: number | undefined;
-  public exp!: number | undefined;
+  id!: number;
+  email?: string;
+  name?: string;
+  iat!: number | undefined;
+  exp!: number | undefined;
 }

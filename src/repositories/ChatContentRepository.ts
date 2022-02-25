@@ -3,15 +3,17 @@ import { ChatContent } from '../entities/chatContent';
 
 @EntityRepository(ChatContent)
 export class ChatContentRepository extends Repository<ChatContent> {
-  public async findByChatListId(chatId: number) {
+  async findChatContentById(chatId: number, skip: number = 0) {
     return await this.createQueryBuilder('chatContents')
       .addSelect(['user.id', 'user.name'])
       .leftJoin('chatContents.User', 'user')
       .where('chat_list_id = :chatId', { chatId })
+      .take(100)
+      .skip(skip)
       .getMany();
   }
 
-  public async findById(id: number, chatId: number) {
+  async findById(id: number, chatId: number) {
     return await this.createQueryBuilder('chatContents')
       .addSelect(['user.id'])
       .leftJoin('chatContents.ChatList', 'chatList')
@@ -21,12 +23,30 @@ export class ChatContentRepository extends Repository<ChatContent> {
       .getOne();
   }
 
+  async findLastChatContentByIds(chatIds: number[]) {
+    return await this.createQueryBuilder()
+      .subQuery()
+      .from((qb) => {
+        return qb
+          .subQuery()
+          .select(['id', 'content', 'image', 'deleted', 'chat_list_id'])
+          .addSelect(
+            'ROW_NUMBER() OVER(PARTITION BY chat_list_id ORDER BY created_at DESC)',
+            'RowIdx'
+          )
+          .from(ChatContent, 'c');
+      }, 'f')
+      .where('RowIdx = 1')
+
+      .getRawMany();
+  }
+
   /**
    * 트랜잭션을 적용하여 저장한다.
    * @param transactionManager 트랜잭션
    * @param chatUser chatContent Entity
    */
-  public async transactionSave(
+  async transactionSave(
     @TransactionManager() transactionManager: EntityManager,
     chatContent: ChatContent
   ) {

@@ -1,4 +1,4 @@
-import { NotFoundError } from 'routing-controllers';
+import { BadRequestError, InternalServerError, NotFoundError } from 'routing-controllers';
 import { Service } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { CreateUserDto, UpdateUserDto } from '../dtos/UserDto';
@@ -14,7 +14,7 @@ export class UserService {
    * 사용자의 정보를 조회한다.
    * @param id 사용자 id
    */
-  public async getUserById(id: number): Promise<User> {
+  async getUserById(id: number): Promise<User> {
     const user = await this.userRepository.findById(id);
 
     if (!user) throw new NotFoundError('There is no matching information.');
@@ -26,7 +26,7 @@ export class UserService {
    * 사용자의 비밀번호를 포함한 정보를 조회한다.
    * @param id 사용자 id
    */
-  public async getUserPasswordById(id: number): Promise<User> {
+  async getUserPasswordById(id: number): Promise<User> {
     const user = await this.userRepository.findAndPasswordById(id);
 
     if (!user) throw new NotFoundError('There is no matching information.');
@@ -38,7 +38,7 @@ export class UserService {
    * 사용자의 정보를 조회한다.
    * @param email 사용자 email
    */
-  public async getUserByEmail(email: string): Promise<User> {
+  async getUserByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findUserByEmail(email);
 
     if (!user) throw new NotFoundError('There is no matching information.');
@@ -47,26 +47,17 @@ export class UserService {
   }
 
   /**
-   * 사용자의 비밀번호를 포함한 정보를 조회한다.
-   * @param email 사용자 email
-   */
-  public async isDuplicateUser(email: string): Promise<boolean> {
-    const user = await this.userRepository.findUserByEmail(email);
-
-    if (user) {
-      return true;
-    }
-
-    return false;
-  }
-
-  /**
    * 사용자를 생성한다.
    * @param createuserDto 사용자 생성 DTO
    */
-  public async createUser(createuserDto: CreateUserDto): Promise<User> {
-    const user = createuserDto.toEntity();
-    return await this.userRepository.save(user);
+  async createUser(createuserDto: CreateUserDto): Promise<User | void> {
+    try {
+      const user = createuserDto.toEntity();
+      return await this.userRepository.save(user);
+    } catch (error: any) {
+      if (error.errno === 1062) throw new BadRequestError('This is the email used.');
+      throw new InternalServerError('Server Error');
+    }
   }
 
   /**
@@ -74,7 +65,7 @@ export class UserService {
    * @param id userId
    * @param updateUserDto 사용자 수정정보 DTO
    */
-  public async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.userRepository.findById(id);
 
     if (!user) throw new NotFoundError('There is no matching information.');
@@ -85,15 +76,25 @@ export class UserService {
     if (password) user.password = bcrypt.hashSync(password, 10);
     if (name) user.name = name;
 
-    return await this.userRepository.save(user);
+    try {
+      return await this.userRepository.save(user);
+    } catch (error: any) {
+      if (error.errno === 1062) throw new BadRequestError('This is the email used.');
+      throw new InternalServerError('Server Error');
+    }
   }
 
-  public async updateUserImage(id: number, image?: string | null) {
+  /**
+   * 사용자의 이미지를 변경한다.
+   * @param id userId
+   * @param image imagePath
+   * @returns
+   */
+  async updateUserImage(id: number, image?: string | null): Promise<User> {
     const user = await this.userRepository.findById(id);
 
     if (!user) throw new NotFoundError('There is no matching information.');
 
-    console.log(image);
     if (image) user.profileImage = `img/${image}`;
     else user.profileImage = null;
 

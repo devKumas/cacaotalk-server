@@ -1,4 +1,5 @@
 import { EntityManager, EntityRepository, Repository, TransactionManager } from 'typeorm';
+import { ChatContent } from '../entities/chatContent';
 import { ChatUser } from '../entities/chatUser';
 
 @EntityRepository(ChatUser)
@@ -9,11 +10,20 @@ export class ChatUserRepository extends Repository<ChatUser> {
    * @param chatId chatId
    * @returns
    */
-  public async findByUserIdAndChatId(id: number, chatId: number) {
+  async findByUserIdAndChatId(id: number, chatId: number) {
     return await this.createQueryBuilder('chatUser')
       .where('user_id = :id', { id })
       .andWhere('chat_list_id = :chatId', { chatId })
       .getOne();
+  }
+
+  async findChatListById(id: number) {
+    const chatUser = await this.createQueryBuilder('chatUser')
+      .leftJoinAndSelect('chatUser.ChatList', 'chatList')
+      .where('chatUser.user_id = :id', { id })
+      .getMany();
+
+    return chatUser;
   }
 
   /**
@@ -21,7 +31,7 @@ export class ChatUserRepository extends Repository<ChatUser> {
    * @param transactionManager 트랜잭션
    * @param chatUser chatUser Entity
    */
-  public async transactionSave(
+  async transactionSave(
     @TransactionManager() transactionManager: EntityManager,
     chatUser: ChatUser
   ) {

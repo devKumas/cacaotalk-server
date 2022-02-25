@@ -36,7 +36,7 @@ export class App {
   private setMiddlewares(): void {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
-    this.app.use('/img', express.static(path.join(__dirname, '..', 'uploads')));
+    this.app.use('/img', express.static(path.join(__dirname, '..', '..', 'uploads')));
     this.app.use(morgan('combined', { stream }));
   }
 

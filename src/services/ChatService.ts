@@ -10,6 +10,7 @@ import { ChatUserRepository } from '../repositories/ChatUserRepository';
 import { UserRepository } from '../repositories/UserRepository';
 import { ChatContentRepository } from '../repositories/ChatContentRepository';
 import { ChatContent } from '../entities/chatContent';
+import { User } from '../entities/User';
 
 @Service()
 export class ChatService {
@@ -24,8 +25,32 @@ export class ChatService {
    * 사용자의 채팅목록을 반환한다.
    * @param id userId
    */
-  async getChatLists(id: number): Promise<ChatList[]> {
-    return await this.chatListRepository.findByUserId(id);
+  async getChatLists(id: number) {
+    const chats = await this.chatListRepository.findByUserId(id);
+    const messages = await this.chatContentRepository.findLastChatContentByIds(
+      chats.map((v) => v.id)
+    );
+
+    return chats.map((v) => {
+      const { id: chatId } = v;
+      const { title } = v.ChatUsers?.filter((v) => v.User?.id === id)[0]!;
+      const chatContents: ChatContent[] = messages
+        .filter((v) => v.chat_list_id === chatId)
+        .map((v) => {
+          const chatContent = new ChatContent();
+          chatContent.id = v.id;
+          chatContent.content = v.content;
+          chatContent.image = v.image;
+          chatContent.deleted = v.deleted;
+
+          return chatContent;
+        });
+      const users = v.ChatUsers?.filter((v) => v.User?.id !== id).map((v) => {
+        return { id: v.User?.id, name: v.User?.name };
+      });
+
+      return { id: chatId, title, Users: users, ChatContents: chatContents };
+    });
   }
 
   /**
@@ -86,7 +111,7 @@ export class ChatService {
 
     if (!chatUser) throw new NotFoundError('There is no matching information.');
 
-    return await this.chatContentRepository.findByChatListId(chatId);
+    return await this.chatContentRepository.findChatContentById(chatId);
   }
 
   async createChatMessage(

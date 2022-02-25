@@ -3,11 +3,13 @@ import { ChatContent } from '../entities/chatContent';
 
 @EntityRepository(ChatContent)
 export class ChatContentRepository extends Repository<ChatContent> {
-  async findByChatListId(chatId: number) {
+  async findChatContentById(chatId: number, skip: number = 0) {
     return await this.createQueryBuilder('chatContents')
       .addSelect(['user.id', 'user.name'])
       .leftJoin('chatContents.User', 'user')
       .where('chat_list_id = :chatId', { chatId })
+      .take(100)
+      .skip(skip)
       .getMany();
   }
 
@@ -19,6 +21,24 @@ export class ChatContentRepository extends Repository<ChatContent> {
       .where('chatContents.id = :id', { id })
       .andWhere('chatList.id = :chatId', { chatId })
       .getOne();
+  }
+
+  async findLastChatContentByIds(chatIds: number[]) {
+    return await this.createQueryBuilder()
+      .subQuery()
+      .from((qb) => {
+        return qb
+          .subQuery()
+          .select(['id', 'content', 'image', 'deleted', 'chat_list_id'])
+          .addSelect(
+            'ROW_NUMBER() OVER(PARTITION BY chat_list_id ORDER BY created_at DESC)',
+            'RowIdx'
+          )
+          .from(ChatContent, 'c');
+      }, 'f')
+      .where('RowIdx = 1')
+
+      .getRawMany();
   }
 
   /**

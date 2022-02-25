@@ -36,15 +36,7 @@ export class ChatController {
   })
   @Get('')
   async getChats(@CurrentUser() jwtUser: JWTUser) {
-    return (await this.chatService.getChatLists(jwtUser.id)).map((v) => {
-      const { id } = v;
-      const { title } = v.ChatUsers?.filter((v) => v.User?.id === jwtUser.id)[0]!;
-      const users = v.ChatUsers?.filter((v) => v.User?.id !== jwtUser.id).map((v) => {
-        return { id: v.User?.id, name: v.User?.name };
-      });
-
-      return { id, title, users };
-    });
+    return await this.chatService.getChatLists(jwtUser.id);
   }
 
   @OpenAPI({

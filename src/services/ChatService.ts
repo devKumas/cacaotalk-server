@@ -9,8 +9,7 @@ import { ChatListRepository } from '../repositories/ChatListRepository';
 import { ChatUserRepository } from '../repositories/ChatUserRepository';
 import { UserRepository } from '../repositories/UserRepository';
 import { ChatContentRepository } from '../repositories/ChatContentRepository';
-import { ChatContent } from '../entities/chatContent';
-import { User } from '../entities/User';
+import { ChatContent } from '../entities/ChatContent';
 
 @Service()
 export class ChatService {

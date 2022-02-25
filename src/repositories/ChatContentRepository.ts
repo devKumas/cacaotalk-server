@@ -1,5 +1,5 @@
 import { EntityManager, EntityRepository, Repository, TransactionManager } from 'typeorm';
-import { ChatContent } from '../entities/chatContent';
+import { ChatContent } from '../entities/ChatContent';
 
 @EntityRepository(ChatContent)
 export class ChatContentRepository extends Repository<ChatContent> {

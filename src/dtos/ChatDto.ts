@@ -1,7 +1,7 @@
 import { IsInt, Length } from 'class-validator';
-import { ChatContent } from '../entities/chatContent';
-import { ChatList } from '../entities/chatList';
-import { ChatUser } from '../entities/chatUser';
+import { ChatContent } from '../entities/ChatContent';
+import { ChatList } from '../entities/ChatList';
+import { ChatUser } from '../entities/ChatUser';
 import { User } from '../entities/User';
 
 /**

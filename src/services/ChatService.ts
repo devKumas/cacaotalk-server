@@ -4,7 +4,7 @@ import { getConnection } from 'typeorm';
 import { filter, head, map, pipe } from '@fxts/core';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { CreateChatDto, CreateMessageDto, UpdateChatDto } from '../dtos/ChatDto';
-import { ChatList } from '../entities/chatList';
+import { ChatList } from '../entities/ChatList';
 import { ChatListRepository } from '../repositories/ChatListRepository';
 import { ChatUserRepository } from '../repositories/ChatUserRepository';
 import { UserRepository } from '../repositories/UserRepository';

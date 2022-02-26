@@ -15,9 +15,7 @@ export class FriendService {
   async getFriends(id: number): Promise<User[]> {
     const friends = await this.userRepository.findFriends(id);
 
-    if (!friends) throw new NotFoundError('There is no matching information.');
-
-    return friends || [];
+    return friends;
   }
 
   /**

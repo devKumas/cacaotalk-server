@@ -50,12 +50,12 @@ export class UserService {
    * 사용자를 생성한다.
    * @param createuserDto 사용자 생성 DTO
    */
-  async createUser(createuserDto: CreateUserDto): Promise<User | void> {
+  async createUser(createuserDto: CreateUserDto): Promise<User> {
     try {
       const user = createuserDto.toEntity();
       return await this.userRepository.save(user);
     } catch (error: any) {
-      if (error.errno === 1062) throw new BadRequestError('This is the email used.');
+      if ([1062, 19].includes(error.errno)) throw new BadRequestError('This is the email used.');
       throw new InternalServerError('Server Error');
     }
   }
@@ -66,9 +66,7 @@ export class UserService {
    * @param updateUserDto 사용자 수정정보 DTO
    */
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) throw new NotFoundError('There is no matching information.');
+    const user = await this.getUserById(id);
 
     const { email, password, name } = updateUserDto;
 
@@ -79,7 +77,7 @@ export class UserService {
     try {
       return await this.userRepository.save(user);
     } catch (error: any) {
-      if (error.errno === 1062) throw new BadRequestError('This is the email used.');
+      if ([1062, 19].includes(error.errno)) throw new BadRequestError('This is the email used.');
       throw new InternalServerError('Server Error');
     }
   }
@@ -91,9 +89,7 @@ export class UserService {
    * @returns
    */
   async updateUserImage(id: number, image?: string | null): Promise<User> {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) throw new NotFoundError('There is no matching information.');
+    const user = await this.getUserById(id);
 
     if (image) user.profileImage = `img/${image}`;
     else user.profileImage = null;

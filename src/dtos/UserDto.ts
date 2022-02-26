@@ -1,6 +1,11 @@
 import { Length, IsEmail, IsEnum, IsOptional, isInt, IsInt } from 'class-validator';
-import { Gender, User } from '../entities/User';
+import { User } from '../entities/User';
 import { JwtPayload } from 'jsonwebtoken';
+
+export enum Gender {
+  M = 'M',
+  F = 'F',
+}
 
 /**
  * 사용자 생성 DTO

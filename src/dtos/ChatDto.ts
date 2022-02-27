@@ -5,7 +5,7 @@ import { ChatUser } from '../entities/ChatUser';
 import { User } from '../entities/User';
 
 /**
- * 사용자 생성 DTO
+ * 채팅 생성 DTO
  */
 export class CreateChatDto {
   @IsInt()

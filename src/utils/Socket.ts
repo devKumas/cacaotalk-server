@@ -31,7 +31,6 @@ export const addSocket = (userId: number, socketId: string) => {
 
   socketDB.set(userId, [...(socketDB.get(userId) || []), socketId]);
   connectSocket.set(socketId, userId);
-  console.log(socketDB);
 
   return socketDB.get(userId);
 };

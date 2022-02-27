@@ -4,11 +4,6 @@ import { AutoDeleteDateEntity } from './Entity';
 import bcrypt from 'bcrypt';
 import { ChatContent } from './ChatContent';
 
-export enum Gender {
-  M = 'M',
-  F = 'F',
-}
-
 @Entity({ name: 'users' })
 export class User extends AutoDeleteDateEntity {
   @Column('varchar', { name: 'email', unique: true, length: 30 })
@@ -20,8 +15,8 @@ export class User extends AutoDeleteDateEntity {
   @Column('varchar', { name: 'name', length: 10 })
   name?: string;
 
-  @Column('enum', { name: 'gender', enum: Gender })
-  gender?: Gender;
+  @Column('varchar', { name: 'gender' })
+  gender?: string;
 
   @Column('varchar', { name: 'profile_image', length: 50, nullable: true })
   profileImage?: string | null;

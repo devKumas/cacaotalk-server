@@ -14,20 +14,8 @@ export class UserService {
    * 사용자의 정보를 조회한다.
    * @param id 사용자 id
    */
-  async getUserById(id: number): Promise<User> {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) throw new NotFoundError('There is no matching information.');
-
-    return user;
-  }
-
-  /**
-   * 사용자의 비밀번호를 포함한 정보를 조회한다.
-   * @param id 사용자 id
-   */
-  async getUserPasswordById(id: number): Promise<User> {
-    const user = await this.userRepository.findAndPasswordById(id);
+  async getUserById(id: number, password: boolean = false): Promise<User> {
+    const user = await this.userRepository.findById(id, password);
 
     if (!user) throw new NotFoundError('There is no matching information.');
 
@@ -38,8 +26,8 @@ export class UserService {
    * 사용자의 정보를 조회한다.
    * @param email 사용자 email
    */
-  async getUserByEmail(email: string): Promise<User> {
-    const user = await this.userRepository.findUserByEmail(email);
+  async getUserByEmail(email: string, password: boolean = false): Promise<User> {
+    const user = await this.userRepository.findUserByEmail(email, password);
 
     if (!user) throw new NotFoundError('There is no matching information.');
 
@@ -50,12 +38,12 @@ export class UserService {
    * 사용자를 생성한다.
    * @param createuserDto 사용자 생성 DTO
    */
-  async createUser(createuserDto: CreateUserDto): Promise<User | void> {
+  async createUser(createuserDto: CreateUserDto): Promise<User> {
     try {
       const user = createuserDto.toEntity();
       return await this.userRepository.save(user);
     } catch (error: any) {
-      if (error.errno === 1062) throw new BadRequestError('This is the email used.');
+      if ([1062, 19].includes(error.errno)) throw new BadRequestError('This is the email used.');
       throw new InternalServerError('Server Error');
     }
   }
@@ -66,9 +54,7 @@ export class UserService {
    * @param updateUserDto 사용자 수정정보 DTO
    */
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) throw new NotFoundError('There is no matching information.');
+    const user = await this.getUserById(id);
 
     const { email, password, name } = updateUserDto;
 
@@ -79,7 +65,7 @@ export class UserService {
     try {
       return await this.userRepository.save(user);
     } catch (error: any) {
-      if (error.errno === 1062) throw new BadRequestError('This is the email used.');
+      if ([1062, 19].includes(error.errno)) throw new BadRequestError('This is the email used.');
       throw new InternalServerError('Server Error');
     }
   }
@@ -91,9 +77,7 @@ export class UserService {
    * @returns
    */
   async updateUserImage(id: number, image?: string | null): Promise<User> {
-    const user = await this.userRepository.findById(id);
-
-    if (!user) throw new NotFoundError('There is no matching information.');
+    const user = await this.getUserById(id);
 
     if (image) user.profileImage = `img/${image}`;
     else user.profileImage = null;

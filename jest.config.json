@@ -1,6 +1,5 @@
 {
   "preset": "ts-jest",
   "testEnvironment": "node",
-  "testMatch": ["<rootDir>/src/**/*.test.ts"] ,
-  "preLaunchTask": "tsc: build - tsconfig.json" 
+  "preLaunchTask": "tsc: build - tsconfig.json"
 }

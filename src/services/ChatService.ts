@@ -4,10 +4,7 @@ import { getConnection } from 'typeorm';
 import { filter, head, pipe } from '@fxts/core';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { CreateChatDto, CreateMessageDto, UpdateChatDto } from '../dtos/ChatDto';
-import { ChatListRepository } from '../repositories/ChatListRepository';
-import { ChatUserRepository } from '../repositories/ChatUserRepository';
-import { ChatContentRepository } from '../repositories/ChatContentRepository';
-import { ChatContent } from '../entities/ChatContent';
+import { ChatList } from '../entities/ChatList';
 import { UserService } from './UserService';
 
 @Service()

@@ -54,10 +54,10 @@ export class ChatController {
     // 자신의 아이디를 등록하는 경우
     if (jwtUser.id === createChatDto.targetId) throw new ForbiddenError('The request is invalid.');
 
-    const chat = await this.chatService.createChat(jwtUser.id, createChatDto);
-    const { id } = chat;
-    const { title } = chat.ChatUsers?.filter((chat) => chat.User?.id === jwtUser.id)[0]!;
-    const users = chat.ChatUsers?.filter((chat) => chat.User?.id !== jwtUser.id).map((chat) => {
+    const chats = await this.chatService.createChat(jwtUser.id, createChatDto);
+    const { id } = chats;
+    const { title } = chats.ChatUsers?.filter((chat) => chat.User?.id === jwtUser.id)[0]!;
+    const users = chats.ChatUsers?.filter((chat) => chat.User?.id !== jwtUser.id).map((chat) => {
       return { id: chat.User?.id, name: chat.User?.name };
     });
 

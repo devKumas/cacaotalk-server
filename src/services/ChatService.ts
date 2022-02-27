@@ -1,16 +1,14 @@
 import { ForbiddenError, NotFoundError } from 'routing-controllers';
 import { Service } from 'typedi';
 import { getConnection } from 'typeorm';
-import { filter, head, map, pipe } from '@fxts/core';
+import { filter, head, pipe } from '@fxts/core';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { CreateChatDto, CreateMessageDto, UpdateChatDto } from '../dtos/ChatDto';
-import { ChatList } from '../entities/chatList';
 import { ChatListRepository } from '../repositories/ChatListRepository';
 import { ChatUserRepository } from '../repositories/ChatUserRepository';
-import { UserRepository } from '../repositories/UserRepository';
 import { ChatContentRepository } from '../repositories/ChatContentRepository';
-import { ChatContent } from '../entities/chatContent';
-import { User } from '../entities/User';
+import { ChatContent } from '../entities/ChatContent';
+import { UserService } from './UserService';
 
 @Service()
 export class ChatService {
@@ -18,7 +16,7 @@ export class ChatService {
     @InjectRepository() private chatListRepository: ChatListRepository,
     @InjectRepository() private chatUserRepository: ChatUserRepository,
     @InjectRepository() private chatContentRepository: ChatContentRepository,
-    @InjectRepository() private userRepository: UserRepository
+    private userService: UserService
   ) {}
 
   /**
@@ -59,10 +57,8 @@ export class ChatService {
    * @param createChatDto 채팅 생성 DTO
    * @returns
    */
-  async createChat(id: number, createChatDto: CreateChatDto): Promise<ChatList> {
-    const targetUser = await this.userRepository.findById(createChatDto.targetId);
-
-    if (!targetUser) throw new NotFoundError('There is no matching information.');
+  async createChat(id: number, createChatDto: CreateChatDto) {
+    const targetUser = await this.userService.getUserById(createChatDto.targetId);
 
     const chats = await this.chatListRepository.findByUserId(id);
 
@@ -83,10 +79,21 @@ export class ChatService {
     });
   }
 
-  async updateChat(id: number, updateChatDto: UpdateChatDto, chatId: number): Promise<ChatList> {
+  /**
+   * 사용자의 채팅을 확인한다.
+   * @param id userId
+   * @param chatId chatId
+   */
+  async getChatUser(id: number, chatId: number) {
     const chatUser = await this.chatUserRepository.findByUserIdAndChatId(id, chatId);
 
     if (!chatUser) throw new NotFoundError('There is no matching information.');
+
+    return chatUser;
+  }
+
+  async updateChat(id: number, updateChatDto: UpdateChatDto, chatId: number) {
+    const chatUser = await this.getChatUser(id, chatId);
 
     chatUser.title = updateChatDto.title;
 
@@ -94,31 +101,36 @@ export class ChatService {
   }
 
   /**
-   * 채팅방
+   * 채팅을 삭제한다.
    * @param id userId
    * @param chatId chatId
    */
-  async deleteChat(id: number, chatId: number): Promise<void> {
-    const chatUser = await this.chatUserRepository.findByUserIdAndChatId(id, chatId);
+  async deleteChat(id: number, chatId: number) {
+    const chatUser = await this.getChatUser(id, chatId);
 
-    if (!chatUser) throw new NotFoundError('There is no matching information.');
-
-    await this.chatUserRepository.delete(chatUser);
+    return !!(await this.chatUserRepository.delete(chatUser));
   }
 
-  async getChatMessages(id: number, chatId: number): Promise<ChatContent[]> {
-    const chatUser = await this.chatUserRepository.findByUserIdAndChatId(id, chatId);
-
-    if (!chatUser) throw new NotFoundError('There is no matching information.');
+  /**
+   * 채팅의 메시지 내용을 호출한다.
+   * @param id userId
+   * @param chatId chatId
+   * @returns
+   */
+  async getChatMessages(id: number, chatId: number) {
+    await this.getChatUser(id, chatId);
 
     return await this.chatContentRepository.findChatContentById(chatId);
   }
 
-  async createChatMessage(
-    id: number,
-    chatId: number,
-    createMessageDto: CreateMessageDto
-  ): Promise<ChatContent> {
+  /**
+   *
+   * @param id userId
+   * @param chatId chatId
+   * @param createMessageDto 메시지 생성 DTO
+   * @returns
+   */
+  async createChatMessage(id: number, chatId: number, createMessageDto: CreateMessageDto) {
     const chatList = await this.chatListRepository.findById(chatId);
 
     if (!chatList) throw new NotFoundError('There is no matching information.');
@@ -140,7 +152,13 @@ export class ChatService {
     });
   }
 
-  async deleteChatMessage(id: number, chatId: number, messageId: number): Promise<void> {
+  /**
+   * 사용자의 메시지를 삭제한다.
+   * @param id userId
+   * @param chatId chatId
+   * @param messageId messageId
+   */
+  async deleteChatMessage(id: number, chatId: number, messageId: number) {
     const message = await this.chatContentRepository.findById(messageId, chatId);
 
     if (!message) throw new NotFoundError('There is no matching information.');
@@ -152,6 +170,6 @@ export class ChatService {
     message.image = null;
     message.deleted = true;
 
-    this.chatContentRepository.save(message);
+    return !!(await this.chatContentRepository.save(message));
   }
 }

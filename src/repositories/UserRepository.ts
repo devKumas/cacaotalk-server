@@ -9,18 +9,9 @@ export class UserRepository extends Repository<User> {
    * @param id userId
    * @returns
    */
-  async findById(id: number) {
-    return await this.createQueryBuilder('user').where('user.id = :id', { id }).getOne();
-  }
-
-  /**
-   * 사용자의 비밀번호를 포함한 정보를 조회한다.
-   * @param id userId
-   * @returns
-   */
-  async findAndPasswordById(id: number) {
+  async findById(id: number, password: boolean) {
     return await this.createQueryBuilder('user')
-      .addSelect('user.password')
+      .addSelect(password ? 'user.password' : '')
       .where('user.id = :id', { id })
       .getOne();
   }
@@ -30,18 +21,9 @@ export class UserRepository extends Repository<User> {
    * @param email userEmail
    * @returns
    */
-  async findUserByEmail(email: string) {
-    return await this.createQueryBuilder('user').where('user.email = :email', { email }).getOne();
-  }
-
-  /**
-   * 사용자의 비밀번호를 포함한 정보를 조회한다.
-   * @param email userEmail
-   * @returns
-   */
-  async findFullUserByEmail(email: string) {
+  async findUserByEmail(email: string, password: boolean) {
     return await this.createQueryBuilder('user')
-      .addSelect('user.password')
+      .addSelect(password ? 'user.password' : '')
       .where('user.email = :email', { email })
       .getOne();
   }

@@ -11,7 +11,6 @@ import { User } from '../entities/User';
  */
 export const authorizationChecker = async (action: Action, roles: string[]) => {
   const getToken = extractAccessToken(action.request.headers['authorization']);
-  console.log(getToken);
 
   if (!getToken) return false;
   checkAccessToken(getToken);

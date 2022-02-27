@@ -1,5 +1,11 @@
-import { EntityManager, EntityRepository, Repository, TransactionManager } from 'typeorm';
-import { ChatContent } from '../entities/chatContent';
+import {
+  EntityManager,
+  EntityRepository,
+  Repository,
+  TransactionManager,
+  getConnection,
+} from 'typeorm';
+import { ChatContent } from '../entities/ChatContent';
 
 @EntityRepository(ChatContent)
 export class ChatContentRepository extends Repository<ChatContent> {
@@ -24,8 +30,8 @@ export class ChatContentRepository extends Repository<ChatContent> {
   }
 
   async findLastChatContentByIds(chatIds: number[]) {
-    return await this.createQueryBuilder()
-      .subQuery()
+    return await getConnection()
+      .createQueryBuilder()
       .from((qb) => {
         return qb
           .subQuery()

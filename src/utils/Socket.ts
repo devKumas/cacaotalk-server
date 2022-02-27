@@ -1,7 +1,7 @@
 import express from 'express';
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import { User } from '../entities/user';
+import { User } from '../entities/User';
 
 export default (httpServer: HttpServer, app: express.Application) => {
   const io = new Server(httpServer, {
@@ -31,7 +31,6 @@ export const addSocket = (userId: number, socketId: string) => {
 
   socketDB.set(userId, [...(socketDB.get(userId) || []), socketId]);
   connectSocket.set(socketId, userId);
-  console.log(socketDB);
 
   return socketDB.get(userId);
 };

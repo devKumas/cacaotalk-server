@@ -2,15 +2,13 @@ import { Authorized, Body, CurrentUser, JsonController, Post } from 'routing-con
 import { OpenAPI } from 'routing-controllers-openapi';
 import { JWTUser, LoginUserDto, ReissuanceAccessTokenDto } from '../dtos/UserDto';
 import { AuthService } from '../services/AuthService';
-import { UserService } from '../services/UserService';
-import { createAccessToken, createRefreshToken, checkRefreshToken } from '../utils/Auth';
 
 @OpenAPI({
   tags: ['Auth'],
 })
 @JsonController('/auth')
 export class AuthController {
-  constructor(private authService: AuthService, private userService: UserService) {}
+  constructor(private authService: AuthService) {}
 
   @OpenAPI({
     summary: '로그인',
@@ -24,14 +22,7 @@ export class AuthController {
   })
   @Post('/login')
   async login(@Body() loginUserDto: LoginUserDto) {
-    const user = await this.authService.login(loginUserDto);
-
-    const accessToken = createAccessToken(user);
-    const refreshToken = createRefreshToken(user);
-
-    await this.authService.saveRefreshToken(user, refreshToken);
-
-    return { tokenType: 'bearer', accessToken, refreshToken };
+    return await this.authService.login(loginUserDto);
   }
 
   @OpenAPI({
@@ -48,7 +39,7 @@ export class AuthController {
   @Authorized()
   @Post('/logout')
   async logout(@CurrentUser() jwtUser: JWTUser) {
-    await this.authService.logout(jwtUser.id);
+    return await this.authService.logout(jwtUser.id);
   }
 
   @OpenAPI({
@@ -64,22 +55,6 @@ export class AuthController {
   })
   @Post('/token')
   async reissuanceAccessToken(@Body() reissuanceAccessToken: ReissuanceAccessTokenDto) {
-    const refreshToken = checkRefreshToken(reissuanceAccessToken.refreshToken);
-
-    let newRefhreshToken;
-    const user = await this.authService.checkUserToken(
-      refreshToken.id,
-      reissuanceAccessToken.refreshToken
-    );
-
-    const newAccessToken = createAccessToken(user);
-
-    // refreshToken 기간이 1일 이내라면 갱신
-    if (refreshToken.exp! < Math.floor(Date.now() / 1000) + 1 * 24 * 60 * 60) {
-      newRefhreshToken = createRefreshToken(user);
-      await this.authService.saveRefreshToken(user, newRefhreshToken);
-    }
-
-    return { tokenType: 'bearer', accessToken: newAccessToken, refhreshToken: newRefhreshToken };
+    return await this.authService.checkUserToken(reissuanceAccessToken.refreshToken);
   }
 }

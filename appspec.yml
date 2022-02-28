@@ -3,3 +3,10 @@ os: linux
 files:
   - source: /
     destination: /home/ubuntu/build/cacaotalk
+hooks:
+  BeforeInstall:
+    - location: /init.sh
+      runas: root
+  ApplicationStart:
+    - location: /start.sh
+      runas: root

@@ -1,0 +1,43 @@
+name: deploy
+on:
+  push:
+    branches:
+      - mast포r
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+      - name: Cache node_modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{runner.OS}}-build-${{hashFiles('**/yarn.lock')}}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ runner.OS }}-
+      # 테스트 및 빌드
+      - name: Install dependencies
+        run: yarn install
+      - name: Jest Test
+        run: yarn test
+      - name: Build
+        run: yarn build
+      # 파일 압축
+      - name: Make zip file
+        run: zip -r ./dist.zip ./dist
+
+      # 배포
+      - name: Deploy
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 --acl private ./dist.zip s3://hwansu-github-action/

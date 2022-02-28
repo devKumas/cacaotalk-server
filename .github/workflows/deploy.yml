@@ -29,7 +29,7 @@ jobs:
         run: yarn build
       # 파일 압축
       - name: Make zip file
-        run: zip -r ./dist.zip ./dist
+        run: zip -r ./cacaotalk-github-action.zip ./
 
       # 배포
       - name: Deploy
@@ -40,4 +40,4 @@ jobs:
           aws-region: ap-northeast-2
 
       - name: Upload to S3
-        run: aws s3 cp --region ap-northeast-2 --acl private ./dist.zip s3://hwansu-github-action/
+        run: aws s3 cp --region ap-northeast-2 --acl private ./cacaotalk-github-action.zip s3://hwansu-github-action/

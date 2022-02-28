@@ -7,6 +7,3 @@ hooks:
   BeforeInstall:
     - location: /init.sh
       runas: root
-  ApplicationStart:
-    - location: /start.sh
-      runas: root

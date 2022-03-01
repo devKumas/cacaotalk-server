@@ -1,0 +1,9 @@
+{
+  "script": "./dist/server.js",
+  "name": "cacaotalk",
+  "watch": true,
+  "ignore_watch": ["node_modules", "uploads"],
+  "watch_options": {
+    "followSymlinks": false
+  }
+}

@@ -26,7 +26,7 @@ export function useSwagger(app: express.Application) {
     info: {
       title: 'CacaoTalk',
       description: 'CacaoTalk API',
-      version: '1.0.0',
+      version: '1.0.1',
     },
   });
 

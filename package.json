@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "start": "NODE_ENV=production pm2 start dist/server.js",
+    "start": "NODE_ENV=production pm2 start pm2.config.json", 
     "dev": "NODE_ENV=development nodemon",
     "build": "tsc",
     "prod": "yarn build && yarn start",

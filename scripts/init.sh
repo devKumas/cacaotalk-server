@@ -1,2 +1,2 @@
 cd /home/ubuntu/build/cacaotalk
-yarn
+yarn install --production

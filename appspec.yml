@@ -4,7 +4,7 @@ files:
   - source: /
     destination: /home/ubuntu/build/cacaotalk
 hooks:
-  BeforeInstall:
+  AfterInstall:
     - location: scripts/init.sh
       timeout: 500
       runas: root
